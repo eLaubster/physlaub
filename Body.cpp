@@ -35,15 +35,15 @@ void Body::update(float timeStep) {
 }
 
 void Body::collide() {
-    for(auto b : world->bodies) {
+    for(auto b2 : world->bodies) {
 
-        if(b == this) {
+        if(b2 == this) {
             continue;
         }
 
         bool collided = false;
         for(auto collider : collidedWith) {
-            if(b == collider) {
+            if(b2 == collider) {
                 collided = true;
                 break;
             }
@@ -53,49 +53,45 @@ void Body::collide() {
             continue;
         }
 
-        Shape* s1 = fixture->shape;
-        Shape* s2 = b->fixture->shape;
+        Body* b1 = this;
+
+        Shape* s1 = b1->fixture->shape;
+        Shape* s2 = b2->fixture->shape;
 
         CircleShape* c1 = dynamic_cast<CircleShape*>(s1);
         CircleShape* c2 = dynamic_cast<CircleShape*>(s2);
 
         // For circle-circle collisions
         if(s1->checkOverlap(s2)) {
-            float m1 = fixture->mass;
-            float m2 = b->fixture->mass;
 
-            float dist = b->pos.sub(pos).getMag();
+            float m1 = b1->fixture->mass;
+            float m2 = b2->fixture->mass;
+
+            float dist = b2->pos.sub(b1->pos).getMag();
             float overlap = 0.5 * (dist - c1->r - c2->r);
 
-            std::cout << dist << std::endl;
-            std::cout << "s1: " << c1->r << std::endl;
-            std::cout << "s2: " << c2->r << std::endl;
+            b1->pos.x -= overlap * (pos.x - b2->pos.x) / dist;
+            b1->pos.y -= overlap * (pos.y - b2->pos.y) / dist;
+            b2->pos.x += overlap * (pos.x - b2->pos.x) / dist;
+            b2->pos.y += overlap * (pos.y - b2->pos.y) / dist;
 
-            pos.x -= overlap*(pos.x - b->pos.x)/dist;
-            pos.y -= overlap*(pos.y - b->pos.y)/dist;
+            float normx = (b2->pos.x - b1->pos.x) / dist;
+            float normy = (b2->pos.y - b1->pos.y) / dist;
 
-            b->pos.x += overlap*(pos.x - b->pos.x)/dist;
-            b->pos.y += overlap*(pos.y - b->pos.y)/dist;
+            Vec2d norm = Vec2d(normx, normy);
+            Vec2d tang = Vec2d(norm.y, -norm.x);
 
-            dist = b->pos.sub(pos).getMag();
-            Vec2d norm = Vec2d((b->pos.x-pos.x)/dist, (b->pos.y-pos.y)/dist);
-            Vec2d tangent = Vec2d(norm.x, -norm.y);
+            float normDp1 = b1->vel.dot(norm);
+            float normDp2 = b2->vel.dot(norm);
 
-            float dotOrigTan = vel.dot(tangent);
-            float dotTargTan = b->vel.dot(tangent);
+            float p1 = (normDp1 * (m1-m2) + 2 * m2 * normDp2) / (m1+m2);
+            float p2 = (normDp2 * (m2-m1) + 2 * m1 * normDp1) / (m1+m2);
 
-            float dotOrigNorm = vel.x*norm.x + vel.y*norm.y;
-            float dotTargNorm = b->vel.x*norm.x + b->vel.y*norm.y;
-            
-            std::cout << m1 + m2 << std::endl;
-            float p1 = (dotOrigNorm * (m1 - m2) + 2 * m2*dotTargNorm) / (m1+m2);
-            float p2 = (dotTargNorm * (m2 - m1) + 2 * m1*dotOrigNorm) / (m1+m2);
+            b1->vel.x = tang.x * b1->vel.dot(tang) + norm.x * p1;
+            b1->vel.y = tang.y * b1->vel.dot(tang) + norm.y * p1;
 
-            vel.x = tangent.x * dotOrigTan + norm.x * p1;
-            vel.y = tangent.y * dotOrigTan + norm.y * p1;
-            b->vel.x = tangent.x * dotTargTan + norm.x * p2;
-            b->vel.y = tangent.y * dotTargTan + norm.y * p2;
-
+            b2->vel.x = tang.x * b2->vel.dot(tang) + norm.x * p2;
+            b2->vel.y = tang.y * b2->vel.dot(tang) + norm.y * p2;
         }
     }
 }
