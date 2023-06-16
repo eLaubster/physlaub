@@ -29,11 +29,11 @@ public:
 
     Fixture* fixture;
 
-    Body(float x, float y, float a);
+    Body(double x, double y, double a);
 
     void addForce(Vec2d f);
     void collide();
-    void update(float timeStep);
+    void update(double timeStep);
     void setType(int type);
     void addFixture(Fixture *fixture);
     void setWorld(World *world);

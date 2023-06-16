@@ -3,6 +3,7 @@
 //
 
 #include "World.h"
+#include "CircleShape.h"
 #include <iostream>
 using namespace std;
 
@@ -18,14 +19,28 @@ void World::addBody(Body* b) {
     bodies.push_back(b);
 }
 
-void World::update(float timeStep) {
+void World::update(float timeStep, int divisions) {
 
-    for(auto b : bodies) {
-        b->collide();
-    }
+    for(int i = 0; i < divisions; i++) {
+        for (auto b: bodies) {
+            float x = b->pos.x;
+            float y = b->pos.y;
+            float r = dynamic_cast<CircleShape*>(b->fixture->shape)->r;
 
-    for(auto b : bodies) {
-        b->acc.add(gravity);
-        b->update(timeStep);
+            if(x > 1280 - r) {
+                b->vel.x *= -1;
+            } else if(x < r) {
+                b->vel.x *= -1;
+            }
+
+            if(y > 720 - r) {
+                b->vel.y *= -1;
+            } else if(y < r) {
+                b->vel.y *= -1;
+            }
+
+            b->acc.add(gravity);
+            b->update(timeStep/divisions);
+        }
     }
 }

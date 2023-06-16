@@ -5,7 +5,7 @@
 #include "Vec2d.h"
 #include <cmath>
 
-Vec2d::Vec2d(float x, float y) {
+Vec2d::Vec2d(double x, double y) {
     this->x = x;
     this->y = y;
 }
@@ -20,7 +20,7 @@ Vec2d Vec2d::sub(Vec2d b) {
     return(Vec2d(x-b.x,y-b.y));
 }
 
-Vec2d Vec2d::scalarMult(float s) {
+Vec2d Vec2d::scalarMult(double s) {
     return Vec2d(x*s, y*s);
 }
 

@@ -9,7 +9,7 @@
 #include "World.h"
 #include "CircleShape.h"
 
-Body::Body(float x, float y, float a) {
+Body::Body(double x, double y, double a) {
     pos = Vec2d(x,y);
     vel = Vec2d(0,0);
     acc = Vec2d(0,0);
@@ -22,19 +22,22 @@ void Body::addForce(Vec2d f) {
     acc.y = f.y/fixture->mass;
 }
 
-void Body::update(float timeStep) {
+void Body::update(double timeStep) {
+    collide();
+
     if(type == KINEMATIC) {
         vel = vel.add(acc.scalarMult(timeStep));
         pos = pos.add(vel.scalarMult(timeStep));
         acc = Vec2d(0, 0);
     }
 
-    if(collidedWith.size() > 0) {
+    if(!collidedWith.empty()) {
         collidedWith = {};
     }
 }
 
 void Body::collide() {
+    bool bp = false;
     for(auto b2 : world->bodies) {
 
         if(b2 == this) {
@@ -63,6 +66,7 @@ void Body::collide() {
 
         // For circle-circle collisions
         if(s1->checkOverlap(s2)) {
+            bp = true;
 
             float m1 = b1->fixture->mass;
             float m2 = b2->fixture->mass;
@@ -75,8 +79,10 @@ void Body::collide() {
             b2->pos.x += overlap * (pos.x - b2->pos.x) / dist;
             b2->pos.y += overlap * (pos.y - b2->pos.y) / dist;
 
-            float normx = (b2->pos.x - b1->pos.x) / dist;
-            float normy = (b2->pos.y - b1->pos.y) / dist;
+            dist = b2->pos.sub(b1->pos).getMag();
+
+            float normx = (b2->pos.x - b1->pos.x) / (dist);
+            float normy = (b2->pos.y - b1->pos.y) / (dist);
 
             Vec2d norm = Vec2d(normx, normy);
             Vec2d tang = Vec2d(norm.y, -norm.x);
@@ -92,6 +98,16 @@ void Body::collide() {
 
             b2->vel.x = tang.x * b2->vel.dot(tang) + norm.x * p2;
             b2->vel.y = tang.y * b2->vel.dot(tang) + norm.y * p2;
+
+            std::cout << "b1 tang velx: " << tang.x * b1->vel.dot(tang) << std::endl;
+            std::cout << "b1 norm velx: " << norm.x * p1 << std::endl;
+            std::cout << "b1 velx: " << b1->vel.x << std::endl;
+            std::cout << "b1 vely: " << b1->vel.y << std::endl << std::endl;
+
+            std::cout << "b2 tang velx: " << tang.x * b2->vel.dot(tang) << std::endl;
+            std::cout << "b2 norm velx: " << norm.x * p2 << std::endl;
+            std::cout << "b2 velx: " << b2->vel.x << std::endl;
+            std::cout << "b2 vely: " << b2->vel.y << std::endl;
         }
     }
 }

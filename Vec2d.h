@@ -10,12 +10,12 @@ public:
     float x;
     float y;
 
-    Vec2d(float x, float y);
+    Vec2d(double x, double y);
 
     float getMag();
     Vec2d add(Vec2d b);
     Vec2d sub(Vec2d b);
-    Vec2d scalarMult(float s);
+    Vec2d scalarMult(double s);
     Vec2d normalize();
     float dot(Vec2d b);
 };

@@ -13,7 +13,7 @@ class World {
 public:
     World();
     void setGravity(float x, float y);
-    void update(float timeStep);
+    void update(float timeStep, int divisions);
     void addBody(Body* b);
     std::vector<Body*> bodies;
 
