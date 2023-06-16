@@ -7,17 +7,17 @@
 
 class Vec2d {
 public:
-    float x;
-    float y;
+    double x;
+    double y;
 
     Vec2d(double x, double y);
 
-    float getMag();
+    double getMag();
     Vec2d add(Vec2d b);
     Vec2d sub(Vec2d b);
     Vec2d scalarMult(double s);
     Vec2d normalize();
-    float dot(Vec2d b);
+    double dot(Vec2d b);
 };
 
 

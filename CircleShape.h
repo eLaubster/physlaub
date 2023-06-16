@@ -9,7 +9,7 @@
 
 class CircleShape : public Shape {
 public:
-    float r;
+    double r;
 
     CircleShape(float r);
 

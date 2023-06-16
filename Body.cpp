@@ -8,6 +8,7 @@
 #include "Body.h"
 #include "World.h"
 #include "CircleShape.h"
+using namespace std;
 
 Body::Body(double x, double y, double a) {
     pos = Vec2d(x,y);
@@ -66,48 +67,33 @@ void Body::collide() {
 
         // For circle-circle collisions
         if(s1->checkOverlap(s2)) {
-            bp = true;
+            double m1 = b1->fixture->mass;
+            double m2 = b2->fixture->mass;
 
-            float m1 = b1->fixture->mass;
-            float m2 = b2->fixture->mass;
-
-            float dist = b2->pos.sub(b1->pos).getMag();
-            float overlap = 0.5 * (dist - c1->r - c2->r);
+            double dist = b2->pos.sub(b1->pos).getMag();
+            double overlap = 0.5 * (dist - c1->r - c2->r);
 
             b1->pos.x -= overlap * (pos.x - b2->pos.x) / dist;
             b1->pos.y -= overlap * (pos.y - b2->pos.y) / dist;
             b2->pos.x += overlap * (pos.x - b2->pos.x) / dist;
             b2->pos.y += overlap * (pos.y - b2->pos.y) / dist;
 
-            dist = b2->pos.sub(b1->pos).getMag();
-
-            float normx = (b2->pos.x - b1->pos.x) / (dist);
-            float normy = (b2->pos.y - b1->pos.y) / (dist);
+            dist = c2->r + c1->r;
+            double normx = (b2->pos.x - b1->pos.x) / dist;
+            double normy = (b2->pos.y - b1->pos.y) / dist;
 
             Vec2d norm = Vec2d(normx, normy);
-            Vec2d tang = Vec2d(norm.y, -norm.x);
+            Vec2d tang = Vec2d(normy, -normx);
 
-            float normDp1 = b1->vel.dot(norm);
-            float normDp2 = b2->vel.dot(norm);
+            double dptang1 = b1->vel.dot(tang);
+            double dptang2 = b2->vel.dot(tang);
+            double dpnorm1 = b1->vel.dot(norm);
+            double dpnorm2 = b2->vel.dot(norm);
 
-            float p1 = (normDp1 * (m1-m2) + 2 * m2 * normDp2) / (m1+m2);
-            float p2 = (normDp2 * (m2-m1) + 2 * m1 * normDp1) / (m1+m2);
-
-            b1->vel.x = tang.x * b1->vel.dot(tang) + norm.x * p1;
-            b1->vel.y = tang.y * b1->vel.dot(tang) + norm.y * p1;
-
-            b2->vel.x = tang.x * b2->vel.dot(tang) + norm.x * p2;
-            b2->vel.y = tang.y * b2->vel.dot(tang) + norm.y * p2;
-
-            std::cout << "b1 tang velx: " << tang.x * b1->vel.dot(tang) << std::endl;
-            std::cout << "b1 norm velx: " << norm.x * p1 << std::endl;
-            std::cout << "b1 velx: " << b1->vel.x << std::endl;
-            std::cout << "b1 vely: " << b1->vel.y << std::endl << std::endl;
-
-            std::cout << "b2 tang velx: " << tang.x * b2->vel.dot(tang) << std::endl;
-            std::cout << "b2 norm velx: " << norm.x * p2 << std::endl;
-            std::cout << "b2 velx: " << b2->vel.x << std::endl;
-            std::cout << "b2 vely: " << b2->vel.y << std::endl;
+            b1->vel.x = dptang1 * tang.x + dpnorm2 * norm.x;
+            b1->vel.y = dptang1 * tang.y + dpnorm2 * norm.y;
+            b2->vel.x = dptang2 * tang.x + dpnorm1 * norm.x;
+            b2->vel.y = dptang2 * tang.y + dpnorm1 * norm.y;
         }
     }
 }

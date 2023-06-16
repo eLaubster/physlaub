@@ -23,9 +23,9 @@ void World::update(float timeStep, int divisions) {
 
     for(int i = 0; i < divisions; i++) {
         for (auto b: bodies) {
-            float x = b->pos.x;
-            float y = b->pos.y;
-            float r = dynamic_cast<CircleShape*>(b->fixture->shape)->r;
+            double x = b->pos.x;
+            double y = b->pos.y;
+            double r = dynamic_cast<CircleShape*>(b->fixture->shape)->r;
 
             if(x > 1280 - r) {
                 b->vel.x *= -1;

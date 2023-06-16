@@ -24,15 +24,15 @@ Vec2d Vec2d::scalarMult(double s) {
     return Vec2d(x*s, y*s);
 }
 
-float Vec2d::getMag() {
+double Vec2d::getMag() {
     return sqrt((pow(x, 2) + pow(y, 2)));
 }
 
 Vec2d Vec2d::normalize() {
-    float mag = getMag();
+    double mag = getMag();
     return(Vec2d(x/mag, y/mag));
 }
 
-float Vec2d::dot(Vec2d b) {
+double Vec2d::dot(Vec2d b) {
     return x*b.x + y*b.y;
 }
