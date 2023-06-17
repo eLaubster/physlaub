@@ -23,7 +23,7 @@ public:
     Vec2d pos = Vec2d(0,0);
     Vec2d vel = Vec2d(0,0);
     Vec2d acc = Vec2d(0,0);
-    float a = 0;
+    double a = 0;
 
     std::vector<Body*> collidedWith = {};
 

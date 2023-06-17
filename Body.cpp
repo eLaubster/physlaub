@@ -3,8 +3,6 @@
 //
 
 #include <iostream>
-#include <cmath>
-#include <vector>
 #include "Body.h"
 #include "World.h"
 #include "CircleShape.h"
@@ -67,20 +65,23 @@ void Body::collide() {
 
         // For circle-circle collisions
         if(s1->checkOverlap(s2)) {
+            cout << "Collision: " << endl;
+
             double m1 = b1->fixture->mass;
             double m2 = b2->fixture->mass;
 
+            cout << "\t-> Total Initial Momentum: " << (b1->vel.x * m1) + (b2->vel.x * m2) << endl;
+
             double dist = b2->pos.sub(b1->pos).getMag();
             double overlap = 0.5 * (dist - c1->r - c2->r);
+
+            double normx = (b2->pos.x - b1->pos.x) / dist;
+            double normy = (b2->pos.y - b1->pos.y) / dist;
 
             b1->pos.x -= overlap * (pos.x - b2->pos.x) / dist;
             b1->pos.y -= overlap * (pos.y - b2->pos.y) / dist;
             b2->pos.x += overlap * (pos.x - b2->pos.x) / dist;
             b2->pos.y += overlap * (pos.y - b2->pos.y) / dist;
-
-            dist = c2->r + c1->r;
-            double normx = (b2->pos.x - b1->pos.x) / dist;
-            double normy = (b2->pos.y - b1->pos.y) / dist;
 
             Vec2d norm = Vec2d(normx, normy);
             Vec2d tang = Vec2d(normy, -normx);
@@ -90,10 +91,16 @@ void Body::collide() {
             double dpnorm1 = b1->vel.dot(norm);
             double dpnorm2 = b2->vel.dot(norm);
 
-            b1->vel.x = dptang1 * tang.x + dpnorm2 * norm.x;
-            b1->vel.y = dptang1 * tang.y + dpnorm2 * norm.y;
-            b2->vel.x = dptang2 * tang.x + dpnorm1 * norm.x;
-            b2->vel.y = dptang2 * tang.y + dpnorm1 * norm.y;
+            double p2 = (m1 * dpnorm1 + m2 * dpnorm2 + m1 * (dpnorm1 - dpnorm2)) / (m1 + m2); // (m1v1 + m2v2 + m1(v1-v2)) / (m1 + m2) = u2
+            double p1 = p2 - (dpnorm1 - dpnorm2);                                             // u1 = u2 - (v1 - v2)
+
+            b1->vel.x = dptang1 * tang.x + p1 * norm.x;
+            b1->vel.y = dptang1 * tang.y + p1 * norm.y;
+            b2->vel.x = dptang2 * tang.x + p2 * norm.x;
+            b2->vel.y = dptang2 * tang.y + p2 * norm.y;
+
+            cout << "\t-> Total Final Momentum: " << (b1->vel.x * m1) + (b2->vel.x * m2) << endl;
+            cout << endl;
         }
     }
 }
