@@ -56,14 +56,24 @@ bool RectShape::checkOverlap(Shape *s) {
 
         Vec2d pos1 = this->fixture->getPos();
         Vec2d pos2 = rs->fixture->getPos();
-
         Vec2d dif = pos1.sub(pos2);
-
 
         if (pow(dif.x, 2) + pow(dif.y, 2) > pow((r + rs->r), 2))
             return false;
 
-        std::cout << "In range for collision" << std::endl;
+        Vec2d * aVerts = getVertices();
+        Vec2d * bVerts = rs->getVertices();
+
+        int vertCount = 4;
+        for(int i = 0; i < vertCount; i++) {
+            if(pointInside(bVerts[i]) || rs->pointInside(aVerts[i])) {
+                return true;
+            }
+        }
+
+        if(pointInside(rs->fixture->getPos())) {
+            return true;
+        }
 
         return false;
     } else if (cs) {
