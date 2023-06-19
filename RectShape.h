@@ -18,7 +18,7 @@ public:
 
     bool checkOverlap(Shape* s) override;
     bool pointInside(Vec2d point) override;
-    Vec2d * getVertexes();
+    Vec2d * getVertices();
 };
 
 

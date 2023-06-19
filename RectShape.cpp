@@ -16,46 +16,38 @@ RectShape::RectShape(double w, double h) {
     this->r = sqrt(pow(h, 2) + pow(w, 2)) / 2.0;
 }
 
-Vec2d *RectShape::getVertexes() {
-    Vec2d *vertexes = new Vec2d[4];
+Vec2d *RectShape::getVertices() {
+    Vec2d *vertices = new Vec2d[4];
 
     Vec2d pos = fixture->getPos();
     double hyp = sqrt(pow(w / 2, 2) + pow(h / 2, 2));
 
     double aStart = (atan(h / w)) * (180 / M_PI);
-    float angles[4];
-    angles[0] = aStart;
-    angles[1] = 180 - aStart;
-    angles[2] = angles[0] + 180;
-    angles[3] = angles[1] + 180;
 
     for (int i = 0; i < 4; i++) {
         double aInc = aStart;
 
-
         // TODO: clean up the logic in these if statements
         // They work but they are messy
-        if(i % 2 == 0)
-            aInc = 180-aStart;
+        if (i % 2 == 0)
+            aInc = 180 - aStart;
 
         double a = aInc + fixture->getAngle();
-        if(i > 1)
+        if (i > 1)
             a += 180;
 
         double px = pos.x + hyp * cos((M_PI * a) / 180);
         double py = pos.y + hyp * sin((M_PI * a) / 180);
 
-        // std::cout << aStart << ": (" << px << ", " << py << ")" << std::endl;
-
-        vertexes[i] = Vec2d(px, py);
+//        std::cout << aStart << ": (" << px << ", " << py << ")" << std::endl;
+        vertices[i] = Vec2d(px, py);
     }
 
-    return vertexes;
+    return vertices;
 }
 
 
 bool RectShape::checkOverlap(Shape *s) {
-
 
     CircleShape *cs = dynamic_cast<CircleShape *>(s);
     RectShape *rs = dynamic_cast<RectShape *>(s);
@@ -71,8 +63,6 @@ bool RectShape::checkOverlap(Shape *s) {
         if (pow(dif.x, 2) + pow(dif.y, 2) > pow((r + rs->r), 2))
             return false;
 
-        getVertexes();
-
         std::cout << "In range for collision" << std::endl;
 
         return false;
@@ -84,5 +74,18 @@ bool RectShape::checkOverlap(Shape *s) {
 }
 
 bool RectShape::pointInside(Vec2d point) {
-    return false;
+
+    bool odd = false;
+
+    Vec2d *vertices = getVertices();
+    // TODO: find length from vertices array instead of hard coding
+    int len = 4;
+    for (int i = 0, j = len - 1; i < len; j = i++) {
+        if (((vertices[i].y > point.y) != (vertices[j].y > point.y)) &&
+            (point.x < (vertices[j].x - vertices[i].x) * (point.y - vertices[i].y) / (vertices[j].y - vertices[i].y) +
+                       vertices[i].x))
+            odd = !odd;
+    }
+
+    return odd;
 }
