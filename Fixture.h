@@ -24,10 +24,13 @@ public:
     void setBody(Body *body);
 
     Vec2d getPos();
+    double getAngle();
     const Shape* getShape();
 
 private:
     Body* body;
+
+
 };
 
 

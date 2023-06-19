@@ -6,8 +6,10 @@
 #include "Fixture.h"
 #include "Body.h"
 #include "CircleShape.h"
+#include "RectShape.h"
 
 #include <iostream>
+#include <typeinfo>
 #include <cmath>
 using namespace std;
 
@@ -16,14 +18,17 @@ CircleShape::CircleShape(float r) {
 }
 
 bool CircleShape::checkOverlap(Shape* s) {
+    CircleShape* cs = dynamic_cast<CircleShape*>(s);
+    RectShape* rs = dynamic_cast<RectShape*>(s);
 
-    CircleShape* other = dynamic_cast<CircleShape*>(s);
 
-    if (other) {
+    if (cs) {
         Vec2d pos1 = fixture->getPos();
-        Vec2d pos2 = other->fixture->getPos();
+        Vec2d pos2 = cs->fixture->getPos();
         Vec2d diff = pos1.sub(pos2);
-        return(pow(diff.x, 2) + pow(diff.y, 2) < pow(this->r + other->r, 2));
+        return(pow(diff.x, 2) + pow(diff.y, 2) < pow(this->r + cs->r, 2));
+    } else if(rs) {
+
     }
     return false;
 }

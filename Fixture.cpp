@@ -19,6 +19,10 @@ Vec2d Fixture::getPos() {
     return body->pos;
 }
 
+double Fixture::getAngle() {
+    return body->a;
+}
+
 const Shape* Fixture::getShape() {
     return shape;
 }

@@ -30,6 +30,7 @@
 #include "Vec2d.h"
 #include "Shape.h"
 #include "CircleShape.h"
+#include "RectShape.h"
 #include "Fixture.h"
 #include "Body.h"
 #include "World.h"

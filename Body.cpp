@@ -78,6 +78,7 @@ void Body::collide() {
             double normx = (b2->pos.x - b1->pos.x) / dist;
             double normy = (b2->pos.y - b1->pos.y) / dist;
 
+            // TODO: Make circles push away from eachother along velocity vectors instead of shortest path for more accurate collisions.
             b1->pos.x -= overlap * (pos.x - b2->pos.x) / dist;
             b1->pos.y -= overlap * (pos.y - b2->pos.y) / dist;
             b2->pos.x += overlap * (pos.x - b2->pos.x) / dist;
