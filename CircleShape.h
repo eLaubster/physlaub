@@ -14,6 +14,7 @@ public:
     CircleShape(float r);
 
     bool checkOverlap(Shape* s) override;
+    bool pointInside(Vec2d point) override;
 };
 
 

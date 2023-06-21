@@ -27,6 +27,8 @@ void World::update(double timeStep, int divisions) {
             double y = b->pos.y;
 
            double r = b->fixture->shape->r;
+           CircleShape *cs = dynamic_cast<CircleShape *>(b->fixture->shape);
+           r = cs->r;
 
             if(r) {
                 if (x > 1280 - r) {
