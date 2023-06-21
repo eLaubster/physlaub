@@ -32,7 +32,9 @@ void Body::update(double timeStep) {
         acc = Vec2d(0, 0);
     }
 
-    collidedWith = {};
+    if(!collidedWith.empty()) {
+        collidedWith = {};
+    }
 }
 
 void Body::collide() {
@@ -45,7 +47,7 @@ void Body::collide() {
         }
 
         bool collided = false;
-        for(Body * collider : collidedWith) {
+        for(auto collider : collidedWith) {
             if(b2 == collider) {
                 collided = true;
                 break;
@@ -78,6 +80,10 @@ void Body::collide() {
             // Calculate the total distance overlapping between the two circles
             double overlap = 0.5 * (dist - c1->r - c2->r);
 
+            // Calculate the unit vector between the two circles
+            double normx = (b2->pos.x - b1->pos.x) / dist;
+            double normy = (b2->pos.y - b1->pos.y) / dist;
+
             // TODO: Make circles push away from eachother along velocity vectors instead of shortest path for more accurate collisions.
             // Calculate static overlap collision to push bodies apart from eachother so they do not coincide
             b1->pos.x -= overlap * (pos.x - b2->pos.x) / dist;
@@ -85,9 +91,7 @@ void Body::collide() {
             b2->pos.x += overlap * (pos.x - b2->pos.x) / dist;
             b2->pos.y += overlap * (pos.y - b2->pos.y) / dist;
 
-            // Calculate the unit vector between the two circles, and the perpendicular tangent between them
-            double normx = (b2->pos.x - b1->pos.x) / dist;
-            double normy = (b2->pos.y - b1->pos.y) / dist;
+            // Calculate the tangent along the two intersecting edges of the circles
             Vec2d norm = Vec2d(normx, normy);
             Vec2d tang = Vec2d(normy, -normx);
 
